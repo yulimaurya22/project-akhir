@@ -6,7 +6,7 @@ export default function App() {
     <View style={styles.container}>
       <Text>Kelompok 3: </Text>
       <Text> Yulia Magfirah Putri - 202069040036 </Text>
-      <Text> Khoirotul Fitriyah - 202069040019 </Text>
+      <Text> Khoirotul Fitriyah - 202069040019</Text>
 
       <StatusBar style="auto" />
     </View>
