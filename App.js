@@ -1,23 +1,27 @@
-import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View } from 'react-native';
+import { NavigationContainer } from '@react-navigation/native';
+import React from 'react'
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import { home } from "./Screen" 
+
+
+const stack = createNativeStackNavigator();
 
 export default function App() {
   return (
-    <View style={styles.container}>
-      <Text>Kelompok 3: </Text>
-      <Text> Yulia Magfirah Putri - 202069040036 </Text>
-      <Text> Khoirotul Fitriyah - 202069040019</Text>
+    <NavigationContainer>
+      <stack.Navigator
+      initialRouteName='home'>
 
-      <StatusBar style="auto" />
-    </View>
+      <stack.Screen name="home"
+            component={home}
+            options={{
+              headerShown:false
+            }}          
+          />
+      </stack.Navigator>
+
+    </NavigationContainer>
+
+       
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-});
