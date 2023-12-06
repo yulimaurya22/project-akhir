@@ -1,20 +1,29 @@
 import React from 'react'
-import { Text, View } from 'react-native'
+import { SafeAreaView, Text, View, FlatList, ActivityIndicator } from 'react-native'
 
+const Item = ({name}) => {
+    <View style ={styles.item}>
+        <Text style={styles.title}>{name}</Text>
+
+    </View>
+    
+};
 const Home = () => {
+    const [isLoading, setLoading] = useState(true);
+    const [data, setData] = useState([]);
     return(
-       <View style={{
-        paddingHorizontal: 22,
-        position: "absolute",
-        top: 250,
-        right: 160,
-        width: "50%"
-    }}>
-            <Text>Kelompok 3</Text>
-            <Text>Khoirotul Fitriyah - 202069040019</Text>
-            <Text>Yulia Magfirah Putri - 202069040036</Text>
-            </View>
-    )
+      <SafeAreaView style={styles.container}>
+        {isLoading  ? (
+            <ActivityIndicator style={styles.container}/>
+        ) : (
+        <FlatList
+         data={DATA}
+         renderItem={({item}) => <Item name= {Item.name}/>}
+         keyExtractor={item => item.id}
+         />
+        )}
+      </SafeAreaView>
+    );
 
 }
 export default Home
