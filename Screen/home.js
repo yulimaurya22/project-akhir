@@ -1,18 +1,13 @@
 import React, { useState, useEffect } from 'react'
 import { SafeAreaView, Text, View, FlatList, ActivityIndicator } from 'react-native'
 
-const Item = ({ name }) => {
-  <View style={styles.item}>
-    <Text style={styles.title}>{name}</Text>
 
-  </View>
-};
 const Home = () => {
 
-  //menampung data dari api
+//menampung data dari api
   const [data, setData] = useState([]);
 
-  //fungsi untuk mengambil data
+//fungsi untuk mengambil data
   const getDataFromApiAsync = async () => {
     try {
       let response = await fetch ('https://makeup-api.herokuapp.com/api/v1/products.json')
@@ -41,12 +36,12 @@ const renderItem = ({ item }) => {
         <View style={{flexDirection:'row', alignItems:'center'}}>
           <Image style={{width:50, height:50, borderRadius:50/2}}
           source={{
-            uri: item.avatar
+            uri: image_link
           }}
           />
         <View style={{marginHorizontal:10}}>
-        <Text>{item.first_name}</Text>
-        <Text>{item.last_name}</Text>
+        <Text>{item.name}</Text>
+        <Text>{item.price}</Text>
         </View>
      
       </View>
@@ -54,14 +49,15 @@ const renderItem = ({ item }) => {
   )
 }
 
-return (
+ ( 
   <View style={styles.container}>
-    <Text>Data dari API</Text>
-    <FlatList />
+    <Text>My List Make Up</Text>
+    <FlatList
     data={data}
     renderItem={renderItem}
     keyExtractor={(item) => item.id}
+    />
   </View>
-)
-;
+);
+
 export default Home

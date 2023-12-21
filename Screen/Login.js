@@ -6,7 +6,7 @@ import { Ionicons } from "@expo/vector-icons";
 import { SafeAreaView } from "react-native-safe-area-context";
 import Button from '../components/Button';
 
-const Login = ({ navigation}) => {
+const Login = ({ navigation }) => {
     const [isPasswordShown, setIsPasswordShown] = useState(false);
 
     return(
@@ -97,7 +97,7 @@ const Login = ({ navigation}) => {
                <Button
                  title="Log In"
                  filled
-                 onPress={()=>navigation.navigate("Home")}
+                 onPress={()=>navigation.navigate("menu")}
 
                  style={{
                      marginTop: 18,
