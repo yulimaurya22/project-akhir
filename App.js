@@ -4,6 +4,7 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import Login from './Screen/Login';
 import Home from './Screen/Home';
 import menu from './Screen/menu';
+import coba from './Screen/coba';
 
 
 const Stack = createNativeStackNavigator();
@@ -34,6 +35,8 @@ export default function App() {
         headerShown:false
       }}
       />
+       
+
       </Stack.Navigator>
 
     </NavigationContainer>

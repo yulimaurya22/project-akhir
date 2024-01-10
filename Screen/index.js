@@ -1,5 +1,5 @@
 import Login from "./Login";
-import Home from "./home";
+import Home from "./Home";
 import menu from "./menu";
 
 

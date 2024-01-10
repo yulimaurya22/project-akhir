@@ -1,10 +1,10 @@
 import React from 'react'
 import { Text, View } from 'react-native'
 
-const menu = () => {
+const menu = ({navigation}) => {
     return(
        <View>
-            <Text></Text>
+            <Text>halo</Text>
             </View>
     )
 

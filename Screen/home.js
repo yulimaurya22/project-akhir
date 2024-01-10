@@ -1,63 +1,125 @@
 import React, { useState, useEffect } from 'react'
-import { SafeAreaView, Text, View, FlatList, ActivityIndicator } from 'react-native'
+import { SafeAreaView, Text, View, FlatList, ActivityIndicator, TouchableOpacity, StyleSheet, ScrollView } from 'react-native'
+import COLORS from '../constants/colors'
+import { Center } from 'native-base'
 
+const Home = ({navigation}) => {
 
-const Home = () => {
-
-//menampung data dari api
-  const [data, setData] = useState([]);
-
-//fungsi untuk mengambil data
-  const getDataFromApiAsync = async () => {
-    try {
-      let response = await fetch ('https://makeup-api.herokuapp.com/api/v1/products.json')
-      let json = await response.json()
-      setData(json);
-    } catch (error) {
-      console.error(error);
-    }
-  }
-};
+  const [list,setList] = useState([])
 
 //otomatis dijalankan
-useEffect(() => {
-  getDataFromApiAsync()
-}, [])
+  useEffect(() => {
+    getDataStudents();
+  }, [])
 
-const renderItem = ({ item }) => {
-  return (
-    <view 
-    style={{
-      marginVertical: 5, 
-      borderBottomWidth: 1, 
-      borderBottomColor: '#ccc', 
-      padding: 5, 
-      }}>
-        <View style={{flexDirection:'row', alignItems:'center'}}>
-          <Image style={{width:50, height:50, borderRadius:50/2}}
-          source={{
-            uri: image_link
-          }}
-          />
-        <View style={{marginHorizontal:10}}>
-        <Text>{item.name}</Text>
-        <Text>{item.price}</Text>
-        </View>
+
+  //fungsi untuk mengambil data
+const getDataStudents =  () => {
+   fetch("https://reqres.in/api/users?page=2",{
+    method : "GET",
+    headers :  {
+      "Content-Type" : "application/json"
+    }
+   }).then(res=>{
+    return res.json()
+   }).then(res=>{
+    var data = res.data
+    setList(data)
+   }).catch(err=>{
+    console.log(err)
+   })
      
+  }    
+
+return (
+  <SafeAreaView style={styles.bg}>
+<SafeAreaView style={styles.container}>
+  <View style={styles.headerBar}>
+    <Text style={styles.txtBar}>HOME</Text>
+  </View>
+
+  <ScrollView 
+  contentContainerStyle={{
+    padding:20,
+    backgroundColor : COLORS.grey
+    }}>
+    
+<View>
+  <Text style={styles.txtHeader}>List Student</Text>
+</View>
+<View>
+  {list.map((item,index)=>{
+    return (
+
+      <View style={styles.icon}>
+      <View key={index} style={styles.itemList}>
+        <Text> {item.id}</Text>
+        <Text style={styles.txtName}> {item.first_name} {item.last_name}</Text>
+        <Text> {item.gender == 1 ? "Male" : "Female"}</Text>
+        <Text> {item.email}</Text>
+        
       </View>
-    </view>
+        
+      </View>  
+     
+    )}
+    )}
+</View>
+</ScrollView>
+</SafeAreaView>
+</SafeAreaView>
   )
 }
 
- ( 
-  <View style={styles.container}>
-    <Text>My List Make Up</Text>
-    <FlatList
-    data={data}
-    renderItem={renderItem}
-    keyExtractor={(item) => item.id}
-    />
-  </View>
-);
 
 export default Home
+
+const styles = StyleSheet.create({
+  bg : {
+    backgroundColor : COLORS.secondary
+  },
+container : {
+  padding : 20,
+
+  
+},
+
+  headerBar : {
+    padding : 20,
+    backgroundColor : COLORS.primary
+   
+  },
+  
+  txtBar :{
+    fontSize : 22,
+    fontWeight : "bold",
+    color : COLORS.white
+    
+  },
+  txtHeader:{
+    padding: 15,
+    fontSize : 30,
+    fontWeight : "bold",
+    width: "100%",
+    borderBottomWidth:0.5,
+   textAlign : 'center'
+   
+  },
+
+  itemList: {
+    padding : 6,
+    paddingVertical : 15,
+    borderBottomColor: COLORS.white,
+    borderBottomWidth:0.5
+    
+  },
+
+  icon :{
+
+  },
+
+  txtName:{
+    fontSize : 18,
+    fontWeight : "bold"
+  },
+})
