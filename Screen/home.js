@@ -1,11 +1,17 @@
 import React, { useState, useEffect } from 'react'
-import { SafeAreaView, Text, View, FlatList, ActivityIndicator, TouchableOpacity, StyleSheet, ScrollView } from 'react-native'
+import { SafeAreaView, Text, View, TouchableOpacity, StyleSheet, ScrollView, Modal, TextInput } from 'react-native'
 import COLORS from '../constants/colors'
 
 
 const Home = ({navigation}) => {
 
   const [list,setList] = useState([])
+  const [modalSiswa,setModalSiswa] = useState(false)
+
+  const[name, setName] = useState("");
+  const[id, setId] = useState("");
+  const[gender, setGender] = useState("");
+  const[email, setEmail] = useState("");
 
 //otomatis dijalankan
   useEffect(() => {
@@ -32,7 +38,7 @@ const getDataStudents =  () => {
   }    
 
   //fungsi untuk Delete
-const handelDelete = (item) => {
+const handleDelete = (item) => {
 
   fetch("https://reqres.in/api/users/2",{
     method : "DELETE",
@@ -54,8 +60,42 @@ const handelDelete = (item) => {
   }
 
 //fungsi untuk edit
-const handelEdit = (item) => {
+const handleEdit = (item) => {
 
+}
+
+//fungsi untuk tambah data
+const handleCreate = () => {
+ setModalSiswa(true)
+}
+
+//fungsi untuk close add data
+const handleCloseModal = () => {
+  setModalSiswa(false)
+}
+
+const handleSave = () => {
+  fetch("https://reqres.in/api/users",{
+    method : "POST",
+    body : JSON.stringify(
+      {
+        "name": name,
+        "job": gender,
+        "id": id,
+        "createdAt": email
+    }),
+    headers :  {
+      'Accept' : 'application/json',
+      'Content-Type' : 'application/json'
+    }
+   }).then(res=>{
+    return res.json()
+   }).then(res=>{
+    getDataStudents();
+    setModalSiswa(false)
+   }).catch(err=>{
+    console.log(err)
+   })
 }
 
 return (
@@ -71,9 +111,74 @@ return (
     backgroundColor : COLORS.grey
     }}>
     
+ <Modal 
+ visible={modalSiswa}
+ >
+
+  <SafeAreaView>
+  <View >
+    <Text style={styles.txtBaru} >Add Data Siswa</Text>
+    <TouchableOpacity onPress={handleCloseModal}>
+      <Text style={styles.txt_close} >Close</Text>
+    </TouchableOpacity>
+  </View>
+
+  <View >
+    <Text style={styles.txt_siswa}>Nama Siswa</Text>
+    <TextInput 
+    style={styles.txt_input}
+    placeholder={"Masukkan Nama"}
+    value={name}
+    onChangeText={(text)=>{
+    setName(text)
+   }}
+    />
+
+    <Text style={styles.txt_siswa}>ID Siswa</Text>
+    <TextInput style={styles.txt_input}
+     placeholder={"Masukkan ID"}
+     value={id}
+    onChangeText={(text)=>{
+     setId(text)
+    }}/>
+
+    <Text style={styles.txt_siswa}>Jenis Kelamin</Text>
+    <TextInput style={styles.txt_input}
+     placeholder={"Jenis Kelamin"}
+     value={gender}
+    onChangeText={(text)=>{
+     setGender(text)
+    }}/>
+
+    <Text style={styles.txt_siswa}>Alamat Email</Text>
+    <TextInput style={styles.txt_input}
+     placeholder={"Masukkan Email"}
+     value={email}
+    onChangeText={(text)=>{
+     setEmail(text)
+    }}/>
+
+    <TouchableOpacity style={styles.btn_save} onPress={handleSave} >
+      <Text style={styles.txt_save}>Simpan</Text>
+    </TouchableOpacity>
+
+  </View>
+  </SafeAreaView>
+ </Modal>
+
 <View>
   <Text style={styles.txtHeader}>Data Siswa SMK Negeri 1 Tri Sakti</Text>
+  <TouchableOpacity style= {{padding:10}} onPress={handleCreate}>
+    <Text
+    style={{color:"navy",
+    fontSize : 20,
+    fontWeight: "bold",
+    textAlign : 'center'}}>
+      + New</Text>
+  </TouchableOpacity>
 </View>
+
+
 <View>
   {list.map((item,index)=>{
     return (
@@ -87,12 +192,12 @@ return (
 
 
         <TouchableOpacity
-           onPress={()=>handelEdit(item)}>
+           onPress={()=>handleEdit(item)}>
           <Text style={styles.txt_edit}>Edit</Text>
           </TouchableOpacity>
 
           <TouchableOpacity
-          onPress={()=>handelDelete(item)}>
+          onPress={()=>handleDelete(item)}>
           <Text style={styles.txt_del}>Delete</Text>
           </TouchableOpacity>
       </View>
@@ -137,7 +242,6 @@ container : {
     fontSize : 30,
     fontWeight : "bold",
     width: "100%",
-    borderBottomWidth:0.5,
    textAlign : 'center'
   },
 
@@ -160,7 +264,7 @@ container : {
     marginTop : 5,
     fontWeight : "bold",
     color : "black",
-    backgroundColor:"yellow",
+    backgroundColor:"orange",
     marginLeft:795,
     textAlign : 'center',
     marginRight:20
@@ -177,4 +281,57 @@ container : {
     textAlign : 'center',
     marginRight:10
   },
+
+  txt_close :{
+      fontSize : 20,
+      backgroundColor: COLORS.grey,
+      fontWeight: "bold",
+      textAlign : 'center'
+  },
+
+  txtBaru :{
+    fontSize : 30,
+    fontWeight : "bold",
+    color : COLORS.white,
+    textAlign : 'center',
+    padding : 20,
+    backgroundColor : COLORS.primary
+  },
+
+  txt_input :{
+    padding:10,
+    borderWidth :1,
+    borderColor:"#888",
+    marginTop:5,
+    marginBottom : 20,
+    marginRight:350,
+    marginLeft:350,
+    borderRadius : 5
+  },
+
+  txt_siswa :{
+    fontSize : 18,
+    marginTop:15, 
+    fontWeight : "bold",
+    marginRight:350,
+    marginLeft:350
+  },
+
+  btn_save:{
+    padding:10,
+    borderWidth :1,
+    backgroundColor:COLORS.secondary,
+    borderColor:"white",
+    marginRight:700,
+    marginLeft:700
+  },
+
+  txt_save:{
+    fontSize : 20,
+    color : "white",
+    fontWeight: "bold",
+    textAlign : 'center'
+
+  }
+
 })
