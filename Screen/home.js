@@ -8,8 +8,9 @@ const Home = ({navigation}) => {
   const [list,setList] = useState([])
   const [modalSiswa,setModalSiswa] = useState(false)
 
-  const[name, setName] = useState("");
-  const[id, setId] = useState("");
+  const[firstname, setfirstName] = useState("");
+  const[lastname, setlastName] = useState("");
+  const[id, setId] = useState(null);
   const[gender, setGender] = useState("");
   const[email, setEmail] = useState("");
 
@@ -18,10 +19,11 @@ const Home = ({navigation}) => {
     getDataStudents();
   }, [])
 
+const [loading, setLoading] = useState(false);
 
   //fungsi untuk mengambil data
 const getDataStudents =  () => {
-   fetch("https://reqres.in/api/users?page=2",{
+   fetch("https://reqres.in/api/users",{
     method : "GET",
     headers :  {
       "Content-Type" : "application/json"
@@ -40,11 +42,9 @@ const getDataStudents =  () => {
   //fungsi untuk Delete
 const handleDelete = (item) => {
 
-  fetch("https://reqres.in/api/users/2",{
-    method : "DELETE",
-    body : JSON.stringify({
-      "reqres_id" : item.reqres_id
-    }),
+  fetch("https://reqres.in/api/users"+item.id,{
+    method : 'DELETE',
+
     headers :  {
       'Accept' : 'application/json',
       'Content-Type' : 'application/json'
@@ -61,9 +61,14 @@ const handleDelete = (item) => {
 
 //fungsi untuk edit
 const handleEdit = (item) => {
+  setfirstName(item.firstname)
+  setlastName(item.lastname)
+  setId(item.id)
+  setGender(item.gender)
+  setEmail(item.email)
+  setModalSiswa(true)
 
 }
-
 //fungsi untuk tambah data
 const handleCreate = () => {
  setModalSiswa(true)
@@ -75,24 +80,28 @@ const handleCloseModal = () => {
 }
 
 const handleSave = () => {
+  setLoading(true);
   fetch("https://reqres.in/api/users",{
-    method : "POST",
+    method : 'POST',
     body : JSON.stringify(
-      {
-        "name": name,
-        "job": gender,
-        "id": id,
-        "createdAt": email
+       {
+    "first_name": firstname,
+    "id": id,
+    "gender": gender,
+    "email" : email,
+    
     }),
     headers :  {
       'Accept' : 'application/json',
       'Content-Type' : 'application/json'
     }
    }).then(res=>{
+    setLoading(false);
     return res.json()
    }).then(res=>{
+    console.log(res)
     getDataStudents();
-    setModalSiswa(false)
+    setModalSiswa(false);
    }).catch(err=>{
     console.log(err)
    })
@@ -116,21 +125,42 @@ return (
  >
 
   <SafeAreaView>
+    
   <View >
     <Text style={styles.txtBaru} >Add Data Siswa</Text>
     <TouchableOpacity onPress={handleCloseModal}>
       <Text style={styles.txt_close} >Close</Text>
     </TouchableOpacity>
   </View>
-
+  
   <View >
-    <Text style={styles.txt_siswa}>Nama Siswa</Text>
+    <Text style={styles.txt_siswa}>Nama Depan Siswa</Text>
     <TextInput 
     style={styles.txt_input}
     placeholder={"Masukkan Nama"}
-    value={name}
+    value={firstname}
     onChangeText={(text)=>{
-    setName(text)
+    setfirstName(text)
+   }}
+    />
+     <Text style={styles.txt_siswa}>Nama Akhir Siswa</Text>
+    <TextInput 
+    style={styles.txt_input}
+    placeholder={"Masukkan Nama"}
+    value={lastname}
+    onChangeText={(text)=>{
+    setlastName(text)
+   }}
+    />
+
+
+<Text style={styles.txt_siswa}>Jenis kelamin</Text>
+    <TextInput 
+    style={styles.txt_input}
+    placeholder={"Jenis kelamin"}
+    value={gender}
+    onChangeText={(text)=>{
+    setGender(text)
    }}
     />
 
@@ -142,13 +172,7 @@ return (
      setId(text)
     }}/>
 
-    <Text style={styles.txt_siswa}>Jenis Kelamin</Text>
-    <TextInput style={styles.txt_input}
-     placeholder={"Jenis Kelamin"}
-     value={gender}
-    onChangeText={(text)=>{
-     setGender(text)
-    }}/>
+   
 
     <Text style={styles.txt_siswa}>Alamat Email</Text>
     <TextInput style={styles.txt_input}
@@ -159,10 +183,11 @@ return (
     }}/>
 
     <TouchableOpacity style={styles.btn_save} onPress={handleSave} >
-      <Text style={styles.txt_save}>Simpan</Text>
+      <Text style={styles.txt_save}>{loading? 'menyimpan...' : 'Simpan'}</Text>
     </TouchableOpacity>
 
   </View>
+  
   </SafeAreaView>
  </Modal>
 
@@ -249,9 +274,6 @@ container : {
     paddingVertical : 15,
     borderBottomColor: COLORS.white,
     borderBottomWidth:0.5,
-    marginRight:300,
-    marginLeft:300
-    
   },
 
   txtName:{
@@ -260,24 +282,24 @@ container : {
   },
 
   txt_edit:{
-    fontSize : 18,
+    fontSize : 15,
     marginTop : 5,
     fontWeight : "bold",
     color : "black",
     backgroundColor:"orange",
-    marginLeft:795,
+    marginLeft:480,
     textAlign : 'center',
-    marginRight:20
+    marginRight:10
   },
 
   txt_del :{
-    fontSize : 18,
+    fontSize : 15,
     marginTop : 5,
     color : "white",
     textAlign:'right',
     backgroundColor:"brown",
     fontWeight : "bold",
-    marginLeft:785,
+    marginLeft:480,
     textAlign : 'center',
     marginRight:10
   },
@@ -290,11 +312,11 @@ container : {
   },
 
   txtBaru :{
-    fontSize : 30,
+    fontSize : 25,
     fontWeight : "bold",
     color : COLORS.white,
     textAlign : 'center',
-    padding : 20,
+    padding : 15,
     backgroundColor : COLORS.primary
   },
 
@@ -303,18 +325,18 @@ container : {
     borderWidth :1,
     borderColor:"#888",
     marginTop:5,
-    marginBottom : 20,
-    marginRight:350,
-    marginLeft:350,
-    borderRadius : 5
+    marginBottom : 10,
+    borderRadius : 5,
+    marginRight:35,
+    marginLeft:35
   },
 
   txt_siswa :{
-    fontSize : 18,
-    marginTop:15, 
+    fontSize : 10,
+    marginTop:10, 
     fontWeight : "bold",
-    marginRight:350,
-    marginLeft:350
+    marginRight:35,
+    marginLeft:35
   },
 
   btn_save:{
@@ -322,8 +344,8 @@ container : {
     borderWidth :1,
     backgroundColor:COLORS.secondary,
     borderColor:"white",
-    marginRight:700,
-    marginLeft:700
+    marginRight:200,
+    marginLeft:200
   },
 
   txt_save:{
