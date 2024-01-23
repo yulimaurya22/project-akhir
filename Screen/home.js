@@ -3,7 +3,7 @@ import { SafeAreaView, Text, View, TouchableOpacity, StyleSheet, ScrollView, Mod
 import COLORS from '../constants/colors'
 
 
-const Home = ({navigation}) => {
+const home = ({navigation}) => {
 
   const [list,setList] = useState([])
   const [modalSiswa,setModalSiswa] = useState(false)
@@ -19,7 +19,6 @@ const Home = ({navigation}) => {
     getDataStudents();
   }, [])
 
-const [loading, setLoading] = useState(false);
 
   //fungsi untuk mengambil data
 const getDataStudents =  () => {
@@ -79,32 +78,37 @@ const handleCloseModal = () => {
   setModalSiswa(false)
 }
 
-const handleSave = () => {
-  setLoading(true);
-  fetch("https://reqres.in/api/users",{
-    method : 'POST',
-    body : JSON.stringify(
-       {
-    "first_name": firstname,
-    "id": id,
-    "gender": gender,
-    "email" : email,
-    
-    }),
-    headers :  {
-      'Accept' : 'application/json',
-      'Content-Type' : 'application/json'
+const handleSave = async () => {
+   try {
+    const apiUrl = 'https://reqres.in/api/users';
+    const requestData = {
+      "first_name": firstname,
+      "last_name" : lastname,
+      "id": id,
+      "gender": gender,
+      "email" : email,
+    };
+
+    const response = fetch(apiUrl, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        // tambahkan header lain jika diperlukan
+      },
+      body: JSON.stringify(requestData),
+    });
+
+    if (!response.ok) {
+      throw new Error('Gagal menambahkan data');
     }
-   }).then(res=>{
-    setLoading(false);
-    return res.json()
-   }).then(res=>{
-    console.log(res)
+
+    const responseData = response.json();
+    console.log('Data berhasil ditambahkan:', responseData);
     getDataStudents();
     setModalSiswa(false);
-   }).catch(err=>{
-    console.log(err)
-   })
+  } catch (error) {
+    console.error('Error:', error.message);
+  }
 }
 
 return (
@@ -183,7 +187,7 @@ return (
     }}/>
 
     <TouchableOpacity style={styles.btn_save} onPress={handleSave} >
-      <Text style={styles.txt_save}>{loading? 'menyimpan...' : 'Simpan'}</Text>
+      <Text style={styles.txt_save}>Simpan</Text>
     </TouchableOpacity>
 
   </View>
@@ -240,7 +244,7 @@ return (
 }
 
 
-export default Home
+export default home
 
 const styles = StyleSheet.create({
   bg : {
