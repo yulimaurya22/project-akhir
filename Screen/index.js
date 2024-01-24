@@ -1,11 +1,12 @@
 import Login from "./Login";
-import Home from "./Home";
+import home from "./home";
 import menu from "./menu";
 
 
 export {
     Login,
-    Home,
-    menu
+    menu,
+    home
+    
     
 }

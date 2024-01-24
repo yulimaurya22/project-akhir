@@ -3,23 +3,21 @@ import { SafeAreaView, Text, View, TouchableOpacity, StyleSheet, ScrollView, Mod
 import COLORS from '../constants/colors'
 
 
-const Home = ({navigation}) => {
+const home = ({navigation}) => {
 
   const [list,setList] = useState([])
   const [modalSiswa,setModalSiswa] = useState(false)
+  const [modalEdit,setModalEdit] = useState(false)
 
-  const[firstname, setfirstName] = useState("");
-  const[lastname, setlastName] = useState("");
+  const[first_name, setfirstName] = useState("");
+  const[last_name, setlastName] = useState("");
   const[id, setId] = useState(null);
-  const[gender, setGender] = useState("");
   const[email, setEmail] = useState("");
 
 //otomatis dijalankan
   useEffect(() => {
     getDataStudents();
   }, [])
-
-const [loading, setLoading] = useState(false);
 
   //fungsi untuk mengambil data
 const getDataStudents =  () => {
@@ -60,15 +58,79 @@ const handleDelete = (item) => {
   }
 
 //fungsi untuk edit
-const handleEdit = (item) => {
-  setfirstName(item.firstname)
-  setlastName(item.lastname)
-  setId(item.id)
-  setGender(item.gender)
-  setEmail(item.email)
-  setModalSiswa(true)
+  const handleEdit = async () => {
+    try {
+      const apiUrl = 'https://reqres.in/api/users';
+      const dataIdToUpdate =id;
+      const updatedData = {
+        "first_name": first_name,
+        "last_name" : last_name,
+        "id": id,
+        "email" : email
 
-}
+      };
+  
+      const response = await fetch(`${apiUrl}/${dataIdToUpdate}`, {
+        method: 'PUT',
+        
+        headers: {
+          'Content-Type': 'application/json',
+         
+        },
+       
+        body: JSON.stringify(updatedData),
+      });
+      
+      if (!response.ok) {
+        throw new Error('Gagal mengedit data');
+        
+      }
+     
+    
+      const responseData = await response.json();
+      console.log('Data berhasil diubah:', responseData);
+      getDataStudents();
+      setModalEdit(false)
+    } catch (error) {
+      console.error('Error:', error.message);
+    }
+  }
+
+  //fungsi save tambah data
+  const handleSave = async () => {
+     try {
+      const apiUrl = 'https://reqres.in/api/users';
+      const requestData = {
+        "first_name": first_name,
+        "last_name" : last_name,
+        "id": id,
+        "email" : email,
+      };
+  
+      const response = await fetch(apiUrl, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          // tambahkan header lain jika diperlukan
+        },
+        body: JSON.stringify(requestData),
+      });
+  
+      if (!response.ok) {
+        throw new Error('Gagal menambahkan data');
+      }
+  
+      const responseData = await response.json()
+      console.log('Data berhasil ditambahkan:', responseData);
+      getDataStudents();
+      setModalSiswa(false);
+    } catch (error) {
+      console.error('Error:', error.message);
+    }
+  }
+  
+
+
 //fungsi untuk tambah data
 const handleCreate = () => {
  setModalSiswa(true)
@@ -79,33 +141,19 @@ const handleCloseModal = () => {
   setModalSiswa(false)
 }
 
-const handleSave = () => {
-  setLoading(true);
-  fetch("https://reqres.in/api/users",{
-    method : 'POST',
-    body : JSON.stringify(
-       {
-    "first_name": firstname,
-    "id": id,
-    "gender": gender,
-    "email" : email,
-    
-    }),
-    headers :  {
-      'Accept' : 'application/json',
-      'Content-Type' : 'application/json'
-    }
-   }).then(res=>{
-    setLoading(false);
-    return res.json()
-   }).then(res=>{
-    console.log(res)
-    getDataStudents();
-    setModalSiswa(false);
-   }).catch(err=>{
-    console.log(err)
-   })
-}
+const handleCreateEdit = (item) => {
+  //untuk memanggil data yang akan diedit
+ setfirstName(item.first_name)
+ setlastName(item.last_name)
+ setId(item.id)
+ setEmail(item.email)
+  setModalEdit(true)
+ }
+ 
+ //fungsi untuk close add data
+ const handleCloseEdit = () => {
+   setModalEdit(false)
+ }
 
 return (
   <SafeAreaView style={styles.bg}>
@@ -138,7 +186,7 @@ return (
     <TextInput 
     style={styles.txt_input}
     placeholder={"Masukkan Nama"}
-    value={firstname}
+    value={first_name}
     onChangeText={(text)=>{
     setfirstName(text)
    }}
@@ -147,22 +195,13 @@ return (
     <TextInput 
     style={styles.txt_input}
     placeholder={"Masukkan Nama"}
-    value={lastname}
+    value={last_name}
     onChangeText={(text)=>{
     setlastName(text)
    }}
     />
 
 
-<Text style={styles.txt_siswa}>Jenis kelamin</Text>
-    <TextInput 
-    style={styles.txt_input}
-    placeholder={"Jenis kelamin"}
-    value={gender}
-    onChangeText={(text)=>{
-    setGender(text)
-   }}
-    />
 
     <Text style={styles.txt_siswa}>ID Siswa</Text>
     <TextInput style={styles.txt_input}
@@ -183,7 +222,70 @@ return (
     }}/>
 
     <TouchableOpacity style={styles.btn_save} onPress={handleSave} >
-      <Text style={styles.txt_save}>{loading? 'menyimpan...' : 'Simpan'}</Text>
+      <Text style={styles.txt_save}>Simpan</Text>
+    </TouchableOpacity>
+
+  </View>
+  
+  </SafeAreaView>
+ </Modal>
+
+ <Modal 
+ visible={modalEdit}
+ >
+
+  <SafeAreaView>
+    
+  <View >
+    <Text style={styles.txtBaru} >Edit Data Siswa</Text>
+    <TouchableOpacity onPress={handleCloseEdit}>
+      <Text style={styles.txt_close} >Close</Text>
+    </TouchableOpacity>
+  </View>
+  
+  <View >
+    <Text style={styles.txt_siswa}>Nama Depan Siswa</Text>
+    <TextInput 
+    style={styles.txt_input}
+    placeholder={"Masukkan Nama"}
+    value={first_name}
+    onChangeText={(text)=>{
+    setfirstName(text)
+   }}
+    />
+     <Text style={styles.txt_siswa}>Nama Akhir Siswa</Text>
+    <TextInput 
+    style={styles.txt_input}
+    placeholder={"Masukkan Nama"}
+    value={last_name}
+    onChangeText={(text)=>{
+    setlastName(text)
+   }}
+    />
+
+
+
+
+    <Text style={styles.txt_siswa}>ID Siswa</Text>
+    <TextInput style={styles.txt_input}
+     placeholder={"Masukkan ID"}
+     value={id}
+    onChangeText={(text)=>{
+     setId(text)
+    }}/>
+
+   
+
+    <Text style={styles.txt_siswa}>Alamat Email</Text>
+    <TextInput style={styles.txt_input}
+     placeholder={"Masukkan Email"}
+     value={email}
+    onChangeText={(text)=>{
+     setEmail(text)
+    }}/>
+
+    <TouchableOpacity style={styles.btn_save} onPress={handleEdit} >
+      <Text style={styles.txt_save}>Simpan</Text>
     </TouchableOpacity>
 
   </View>
@@ -212,12 +314,11 @@ return (
       <View key={index} style={styles.itemList}>
         <Text style={styles.txtName}> {index+1}. {item.first_name} {item.last_name}</Text>
         <Text> {item.id}</Text>
-        <Text> {item.gender == 1 ? "Male" : "Female"}</Text>
         <Text> {item.email}</Text>        
 
 
         <TouchableOpacity
-           onPress={()=>handleEdit(item)}>
+           onPress={()=>handleCreateEdit(item)}>
           <Text style={styles.txt_edit}>Edit</Text>
           </TouchableOpacity>
 
@@ -240,7 +341,7 @@ return (
 }
 
 
-export default Home
+export default home
 
 const styles = StyleSheet.create({
   bg : {
@@ -287,7 +388,7 @@ container : {
     fontWeight : "bold",
     color : "black",
     backgroundColor:"orange",
-    marginLeft:480,
+    marginLeft:100,
     textAlign : 'center',
     marginRight:10
   },
@@ -299,7 +400,7 @@ container : {
     textAlign:'right',
     backgroundColor:"brown",
     fontWeight : "bold",
-    marginLeft:480,
+    marginLeft:100,
     textAlign : 'center',
     marginRight:10
   },
@@ -344,8 +445,9 @@ container : {
     borderWidth :1,
     backgroundColor:COLORS.secondary,
     borderColor:"white",
-    marginRight:200,
-    marginLeft:200
+    borderRadius : 5,
+    marginRight:35,
+    marginLeft:35
   },
 
   txt_save:{

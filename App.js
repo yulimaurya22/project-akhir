@@ -1,9 +1,9 @@
 import { NavigationContainer } from '@react-navigation/native';
 import React from 'react'
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import Login from './Screen/Login';
-import Home from './Screen/Home';
+import Login from './Screen/Login'
 import menu from './Screen/menu';
+import home from './Screen/home';
 
 
 const Stack = createNativeStackNavigator();
@@ -21,8 +21,8 @@ export default function App() {
         headerShown:false}}/>
 
       <Stack.Screen
-      name="Home"
-      component={Home}
+      name="home"
+      component={home}
       options={{
       headerShown:false}}          
           />
