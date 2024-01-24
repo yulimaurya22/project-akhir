@@ -61,7 +61,7 @@ const handleDelete = (item) => {
   const handleEdit = async () => {
     try {
       const apiUrl = 'https://reqres.in/api/users';
-      const dataIdToUpdate =id;
+      const dataIdToUpdate =id; // Ganti dengan ID data yang ingin diubah
       const updatedData = {
         "first_name": first_name,
         "last_name" : last_name,
@@ -72,12 +72,12 @@ const handleDelete = (item) => {
   
       const response = await fetch(`${apiUrl}/${dataIdToUpdate}`, {
         method: 'PUT',
-        
+        //memproses data dalam format json
         headers: {
           'Content-Type': 'application/json',
          
         },
-       
+        //meengirim data dalam format json melalui permintaan http
         body: JSON.stringify(updatedData),
       });
       
